@@ -4,13 +4,12 @@ on:
   push:
     branches:
       - main
-      - v1alpha1
-    tags:
-      - "*"
+    tags: ['v*']
   pull_request:
-    branches:
-      - main
-      - v1alpha1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -119,6 +118,7 @@ jobs:
   release_docker_image:
     needs: [acctest-k8s]
     runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
     steps:
       - uses: actions/checkout@v2
       - name: Setup Go
